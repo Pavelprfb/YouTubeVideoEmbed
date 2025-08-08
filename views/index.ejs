@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>YouTube Video Embed</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    form { margin-bottom: 20px; }
+    .video-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    .video-box iframe { border: none; }
+  </style>
+</head>
+<body>
+  <h1>YouTube Video Embed (144p Autoplay)</h1>
+  <form action="/show" method="POST">
+    <input type="text" name="link" placeholder="YouTube Video Link" required>
+    <input type="number" name="count" placeholder="Number of Videos" required>
+    <button type="submit">Show</button>
+  </form>
+
+  <div class="video-wrapper">
+    <% if (videos.length > 0) { %>
+      <% videos.forEach(function(video, index) { %>
+        <div class="video-box">
+          <div id="player<%= index %>"></div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <% if (videos.length > 0) { %>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      var videoIds = <%- JSON.stringify(videos) %>;
+
+      function onYouTubeIframeAPIReady() {
+        videoIds.forEach(function(videoId, i) {
+          new YT.Player('player' + i, {
+            height: '150', // ছোট রাখলে কোয়ালিটি কম হবে
+            width: '200',
+            videoId: videoId,
+            playerVars: { autoplay: 1, mute: 1 },
+            events: {
+              onReady: function(e) {
+                e.target.setPlaybackQuality('small'); // 144p
+              }
+            }
+          });
+        });
+      }
+    </script>
+  <% } %>
+</body>
+</html>
